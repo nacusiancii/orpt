@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:orpt/data/appointments_provider.dart';
+import 'package:orpt/edit_appointment_screen.dart';
 
-import 'components/components.dart'as components;
+import 'components/components.dart' as components;
 import 'appointment.dart';
 import 'common/date_utils.dart' as du;
 
@@ -19,6 +20,7 @@ class AppointmentDetailsScreen extends StatefulWidget {
 
 class _AppointmentDetailsScreenState extends State<AppointmentDetailsScreen> {
   final TextEditingController _treatmentController = TextEditingController();
+  final none = 'None';
 
   @override
   Widget build(BuildContext context) {
@@ -37,7 +39,7 @@ class _AppointmentDetailsScreenState extends State<AppointmentDetailsScreen> {
                 Text('Date: ${du.formatIndianDate(widget.appointment.date)}'),
           ),
           ListTile(
-            title: Text('Slot: ${widget.appointment.slot}'),
+            title: Text('Slot: ${widget.appointment.slot ?? none}'),
           ),
           ListTile(
             title: Text(
@@ -64,10 +66,26 @@ class _AppointmentDetailsScreenState extends State<AppointmentDetailsScreen> {
                   onPressed: () {
                     _showCancelDialog(context);
                   },
-                  child: const Text('Cancel'),
+                  child: const Text('Cancel Appointment'),
                 ),
               ],
             ),
+          Padding(
+            padding: const EdgeInsets.all(15),
+            child: Center(
+              child: ElevatedButton(
+                onPressed: () {
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => EditAppointmentScreen(
+                              appointmentProvider: widget.provider,
+                              appointment: widget.appointment)));
+                },
+                child: const Text('Edit Appointment'),
+              ),
+            ),
+          ),
         ],
       ),
       bottomNavigationBar: components.navigationBar(context),
@@ -127,7 +145,7 @@ class _AppointmentDetailsScreenState extends State<AppointmentDetailsScreen> {
               onPressed: () {
                 Navigator.pop(context); // Close the dialog
               },
-              child: const Text('Cancel'),
+              child: const Text('No'),
             ),
             TextButton(
               onPressed: () {

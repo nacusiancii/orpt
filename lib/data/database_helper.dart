@@ -143,6 +143,28 @@ class DatabaseHelper {
     return appointments.map((json) => Appointment.fromJson(json)).toList();
   }
 
+  Future<List<Map<String, dynamic>>> countAppointmentsByDate(DateTime selectedMonth) async {
+    final db = await database;
+
+    // Extract year and month from the selected date
+    final year = selectedMonth.year;
+    final month = selectedMonth.month;
+
+    // Format the year and month as a string
+    final formattedMonth = '${month.toString().padLeft(2, '0')}-$year';
+
+    // Execute the query
+    final result = await db.rawQuery('''
+    SELECT $columnDate, COUNT(*) as count
+    FROM $appointmentsTable
+    WHERE SUBSTR($columnDate, 4, 10) = ? AND $columnStatus != ${AppointmentStatus.cancelled.index}
+    GROUP BY $columnDate
+    ORDER BY $columnDate
+  ''', [formattedMonth]);
+
+    return result;
+  }
+
   // Retrieve appointments by name
     Future<List<Appointment>> getAppointmentsByName(String name) async {
       final db = await database;

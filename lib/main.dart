@@ -22,7 +22,6 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       theme: ThemeData(
         useMaterial3: true,
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.green),
       ),
       routes: {
         '/': (context) => CalendarScreen(

@@ -64,13 +64,15 @@ class PatientAppointmentsListScreen extends StatelessWidget {
             MaterialPageRoute(
               builder: (context) => NewAppointmentScreen(
                 appointmentProvider: appointmentProvider,
+                patientName: patient,
               ),
             ),
           );
         },
         child: const Icon(Icons.add),
       ),
-      bottomNavigationBar: components.navigationBar(context,selected: 'patients'),
+      bottomNavigationBar:
+          components.navigationBar(context, selected: 'patients'),
     );
   }
 
@@ -92,29 +94,26 @@ class PatientAppointmentsListScreen extends StatelessWidget {
             subtitle: Text(appointment.status == AppointmentStatus.done
                 ? appointment.treatmentProvided
                 : appointment.treatmentScheduled),
-            trailing: appointment.status != AppointmentStatus.cancelled
-                ? null
-                : ElevatedButton(
-                    onPressed: () {
-                      appointmentProvider.removeAppointment(appointment);
-                    },
-                    style: ElevatedButton.styleFrom(
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(
-                            30.0), // Adjust the value to make it more or less rounded
-                      ),
-                      backgroundColor: Colors.red, // Button color
-                    ),
-                    child: const Padding(
-                      padding:
-                          EdgeInsets.all(10.0), // Adjust the padding as needed
-                      child: Icon(
-                        Icons.cancel,
-                        color: Colors.white, // Icon color
-                        size: 30.0, // Icon size
-                      ),
-                    ),
-                  ),
+            trailing: ElevatedButton(
+              onPressed: () {
+                _showDeleteDialog(context, appointment);
+              },
+              style: ElevatedButton.styleFrom(
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(
+                      30.0), // Adjust the value to make it more or less rounded
+                ),
+                backgroundColor: Colors.red, // Button color
+              ),
+              child: const Padding(
+                padding: EdgeInsets.all(10.0), // Adjust the padding as needed
+                child: Icon(
+                  Icons.cancel,
+                  color: Colors.white, // Icon color
+                  size: 30.0, // Icon size
+                ),
+              ),
+            ),
             onTap: () {
               Navigator.push(
                 context,
@@ -128,6 +127,35 @@ class PatientAppointmentsListScreen extends StatelessWidget {
             },
           ),
       ],
+    );
+  }
+
+  Future<void> _showDeleteDialog(BuildContext context, Appointment appointment) async {
+    return showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text('Confirm Deletion'),
+          content:
+          const Text('Are you sure you want to delete this appointment?'),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context); // Close the dialog
+              },
+              child: const Text('No'),
+            ),
+            TextButton(
+              onPressed: () {
+                // Cancel the appointment
+                appointmentProvider.removeAppointment(appointment);
+                Navigator.pop(context); // Close the dialog
+              },
+              child: const Text('Confirm'),
+            ),
+          ],
+        );
+      },
     );
   }
 }

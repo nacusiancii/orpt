@@ -57,7 +57,8 @@ class AppointmentProvider with ChangeNotifier {
   // Create a new appointment
   void createAppointment(String name, DateTime date, String treatmentScheduled,
       [int? slot]) async {
-    await databaseHelper.insertAppointment(name, date, treatmentScheduled, slot);
+    await databaseHelper.insertAppointment(
+        name, date, treatmentScheduled, slot);
     notifyListeners();
   }
 
@@ -159,13 +160,19 @@ class AppointmentProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  Future<Map<DateTime,int>>fetchNoOfAppointmentsByMonth(DateTime dayInMonth) async {
-    Map<DateTime,int> appointmentCount={};
-    DateTime day = DateTime(dayInMonth.year,dayInMonth.month,1);
-    while(day.month==dayInMonth.month){
-      int count = (await databaseHelper.getAppointmentsByDate(day)).length;
-      appointmentCount.putIfAbsent(day, () => count);
+  Future<Map<String, int>> fetchNoOfAppointmentsByMonth(
+      DateTime dayInMonth) async {
+    List<Map<String,dynamic>> rawData = await databaseHelper.countAppointmentsByDate(dayInMonth);
+    Map<String, int> appointmentCount = {};
+    for (var entry in rawData) {
+      appointmentCount.putIfAbsent(entry["date"], () => entry["count"]);
     }
     return appointmentCount;
+  }
+
+  Future<Appointment> updateAppointment(Appointment editedAppointment) async{
+    await databaseHelper.updateAppointment(editedAppointment);
+    notifyListeners();
+    return editedAppointment;
   }
 }

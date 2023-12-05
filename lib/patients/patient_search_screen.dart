@@ -34,36 +34,37 @@ class _PatientSearchScreenState extends State<PatientSearchScreen> {
             ),
             body: Padding(
               padding: const EdgeInsets.all(8.0),
-              child: SearchAnchor(
-                  builder: (context, controller) {
-                    return SearchBar(
-                      controller: controller,
-                      padding: const MaterialStatePropertyAll<EdgeInsets>(
-                          EdgeInsets.symmetric(horizontal: 16.0)),
-                      onTap: ()=>controller.openView(),
-                      onChanged: (_)=>controller.openView(),
-                      leading: const Icon(Icons.search),
-                    );
-                  },
-                  suggestionsBuilder: (context, controller) {
-                    var patients = snapshot.data!.where((patient) => patient
-                        .toLowerCase()
-                        .contains(controller.text.toLowerCase()));
-                    return List<ListTile>.generate(
-                        patients.length,
-                        (int index) => ListTile(
-                              title: Text(patients.elementAt(index)),
-                              onTap: () => Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) =>
-                                          PatientAppointmentsListScreen(
-                                              appointmentProvider:
-                                                  widget.appointmentProvider,
-                                              patient:
-                                                  patients.elementAt(index)))),
-                            ));
-                  }),
+              child: SearchAnchor(builder: (context, controller) {
+                return SearchBar(
+                  controller: controller,
+                  padding: const MaterialStatePropertyAll<EdgeInsets>(
+                      EdgeInsets.symmetric(horizontal: 16.0)),
+                  onTap: () => controller.openView(),
+                  onChanged: (_) => controller.openView(),
+                  leading: const Icon(Icons.search),
+                );
+              }, suggestionsBuilder: (context, controller) {
+                var patients = snapshot.data!.where((patient) => patient
+                    .toLowerCase()
+                    .contains(controller.text.toLowerCase()));
+                return List<ListTile>.generate(
+                    patients.length,
+                    (int index) => ListTile(
+                          title: Text(patients.elementAt(index)),
+                          onTap: () {
+                            controller.closeView('');
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) =>
+                                        PatientAppointmentsListScreen(
+                                            appointmentProvider:
+                                                widget.appointmentProvider,
+                                            patient:
+                                                patients.elementAt(index))));
+                          },
+                        ));
+              }),
             ),
             bottomNavigationBar: navigationBar(context, selected: 'patients'),
           );

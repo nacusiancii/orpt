@@ -1,37 +1,40 @@
 import 'package:flutter/material.dart';
+import 'package:orpt/appointment_details_screen.dart';
 import 'package:orpt/common/date_utils.dart' as du;
 import 'package:orpt/data/appointments_provider.dart';
+import 'appointment.dart';
 import 'components/components.dart' as components;
 
-class NewAppointmentScreen extends StatefulWidget {
+class EditAppointmentScreen extends StatefulWidget {
   final AppointmentProvider appointmentProvider;
-  final DateTime? selectedDay;
-  final String? patientName;
+  final Appointment appointment;
 
-  const NewAppointmentScreen(
+  const EditAppointmentScreen(
       {super.key,
       required this.appointmentProvider,
-      this.selectedDay,
-      this.patientName});
-
+      required this.appointment});
   @override
-  State<NewAppointmentScreen> createState() => _NewAppointmentScreenState();
+  State<EditAppointmentScreen> createState() => _EditAppointmentScreenState();
 }
 
-class _NewAppointmentScreenState extends State<NewAppointmentScreen> {
+class _EditAppointmentScreenState extends State<EditAppointmentScreen> {
   final _formKey = GlobalKey<FormState>();
   final _dateController = TextEditingController();
   final _slotController = TextEditingController();
   final _treatmentScheduledController = TextEditingController();
   final _nameSearchController = SearchController();
+  final _treatmentPovidedController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
-    _dateController.text = widget.selectedDay == null
+    _nameSearchController.text = widget.appointment.name;
+    _dateController.text = du.formatIndianDate(widget.appointment.date);
+    _slotController.text = widget.appointment.slot == null
         ? ''
-        : du.formatIndianDate(widget.selectedDay!);
-    _nameSearchController.text =
-        widget.patientName == null ? '' : widget.patientName!;
+        : widget.appointment.slot.toString();
+    _treatmentScheduledController.text = widget.appointment.treatmentScheduled;
+    _treatmentPovidedController.text = widget.appointment.treatmentProvided;
+
     Set<String> patients;
     return FutureBuilder<Set<String>>(
       future: widget.appointmentProvider.fetchPatients(),
@@ -123,6 +126,19 @@ class _NewAppointmentScreenState extends State<NewAppointmentScreen> {
                         return null;
                       },
                     ),
+                    (widget.appointment.status != AppointmentStatus.done)
+                        ? const Padding(padding: EdgeInsets.all(0))
+                        : TextFormField(
+                            controller: _treatmentPovidedController,
+                            decoration: const InputDecoration(
+                                labelText: 'Treatment Provided'),
+                            validator: (value) {
+                              if (value!.isEmpty) {
+                                return 'Please enter the treatment scheduled';
+                              }
+                              return null;
+                            },
+                          ),
                     const SizedBox(height: 20),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -138,18 +154,32 @@ class _NewAppointmentScreenState extends State<NewAppointmentScreen> {
                           onPressed: () {
                             // Submit button action
                             if (_formKey.currentState!.validate()) {
-                              final name = _nameSearchController.text;
-                              final date = DateTime.parse(du
-                                  .formatIndianToUsDate(_dateController.text));
                               int? slot = (_slotController.text.isEmpty)
                                   ? null
                                   : int.parse(_slotController.text);
-                              final treatmentScheduled =
-                                  _treatmentScheduledController.text;
-
-                              widget.appointmentProvider.createAppointment(
-                                  name, date, treatmentScheduled, slot);
-                              Navigator.pop(context); // Close the screen
+                              Appointment editedAppointment = Appointment(
+                                  id: widget.appointment.id,
+                                  name: _nameSearchController.text,
+                                  date: DateTime.parse(du.formatIndianToUsDate(
+                                      _dateController.text)),
+                                  treatmentScheduled:
+                                      _treatmentScheduledController.text,
+                                  slot: slot);
+                              editedAppointment.status =
+                                  widget.appointment.status;
+                              editedAppointment.treatmentProvided =
+                                  _treatmentPovidedController.text;
+                              widget.appointmentProvider
+                                  .updateAppointment(editedAppointment);
+                              Navigator.popUntil(context, (p) => p.isFirst);
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) =>
+                                          AppointmentDetailsScreen(
+                                              appointment: editedAppointment,
+                                              provider: widget
+                                                  .appointmentProvider))); // Open edited appointment
                             }
                           },
                           child: const Text('Submit'),
@@ -173,6 +203,7 @@ class _NewAppointmentScreenState extends State<NewAppointmentScreen> {
     _slotController.dispose();
     _treatmentScheduledController.dispose();
     _nameSearchController.dispose();
+    _treatmentPovidedController.dispose();
     super.dispose();
   }
 }
