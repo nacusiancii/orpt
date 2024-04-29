@@ -49,6 +49,7 @@ class PatientAppointmentsListScreen extends StatelessWidget {
                         completedAppointments),
                     _buildSection(
                         context, 'Canceled Appointments', canceledAppointments),
+                    ElevatedButton(onPressed: ()=>_showDeletePatientDialog(context, patient), child: const Text("Delete Patient")),
                   ],
                 );
               }
@@ -96,7 +97,7 @@ class PatientAppointmentsListScreen extends StatelessWidget {
                 : appointment.treatmentScheduled),
             trailing: ElevatedButton(
               onPressed: () {
-                _showDeleteDialog(context, appointment);
+                _showDeleteAppointmentDialog(context, appointment);
               },
               style: ElevatedButton.styleFrom(
                 shape: RoundedRectangleBorder(
@@ -130,7 +131,37 @@ class PatientAppointmentsListScreen extends StatelessWidget {
     );
   }
 
-  Future<void> _showDeleteDialog(BuildContext context, Appointment appointment) async {
+  Future<void> _showDeletePatientDialog(BuildContext context, String patient) async {
+    return showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text('Confirm Deletion'),
+          content:
+          const Text('Are you sure you want to permanently delete this patient and all their data?'),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context); // Close the dialog
+              },
+              child: const Text('No'),
+            ),
+            TextButton(
+              onPressed: () {
+                // Cancel the appointment
+                appointmentProvider.removePatient(patient);
+                Navigator.popUntil(context, (route) => route.isFirst);
+                Navigator.pushNamed(context, '/patients');// Close the dialog
+              },
+              child: const Text('Confirm'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  Future<void> _showDeleteAppointmentDialog(BuildContext context, Appointment appointment) async {
     return showDialog(
       context: context,
       builder: (context) {

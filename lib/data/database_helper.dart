@@ -42,7 +42,9 @@ class DatabaseHelper {
 
   Future<Database> _initDatabase() async {
     //When supporting multiple platforms: TODO implement custom path library to handle differences among platforms
-    String path = join(await getDatabasesPath(), 'appointments2.db');
+    String dbPath = await getDatabasesPath();
+
+    String path = join(dbPath, 'appointments2.db');
     Database db = await openDatabase(
       path,
       version: dbVersion,

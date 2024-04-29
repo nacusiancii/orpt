@@ -175,4 +175,12 @@ class AppointmentProvider with ChangeNotifier {
     notifyListeners();
     return editedAppointment;
   }
+
+  Future<void> removePatient(String patient) async {
+    List<Appointment> appointments = await databaseHelper.getAppointmentsByName(patient);
+    for (var e in appointments) {
+      await databaseHelper.deleteAppointment(e.id);
+    }
+    notifyListeners();
+  }
 }

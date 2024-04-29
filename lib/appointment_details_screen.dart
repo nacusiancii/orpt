@@ -93,6 +93,7 @@ class _AppointmentDetailsScreenState extends State<AppointmentDetailsScreen> {
   }
 
   Future<void> _showMarkDoneDialog(BuildContext context) async {
+    _treatmentController.text = widget.appointment.treatmentScheduled;
     return showDialog(
       context: context,
       builder: (context) {

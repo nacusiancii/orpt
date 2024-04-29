@@ -40,30 +40,16 @@ class _PatientSearchScreenState extends State<PatientSearchScreen> {
                   padding: const MaterialStatePropertyAll<EdgeInsets>(
                       EdgeInsets.symmetric(horizontal: 16.0)),
                   onTap: () => controller.openView(),
-                  onChanged: (_) => controller.openView(),
                   leading: const Icon(Icons.search),
                 );
               }, suggestionsBuilder: (context, controller) {
                 var patients = snapshot.data!.where((patient) => patient
                     .toLowerCase()
                     .contains(controller.text.toLowerCase()));
-                return List<ListTile>.generate(
-                    patients.length,
-                    (int index) => ListTile(
-                          title: Text(patients.elementAt(index)),
-                          onTap: () {
-                            controller.closeView('');
-                            Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) =>
-                                        PatientAppointmentsListScreen(
-                                            appointmentProvider:
-                                                widget.appointmentProvider,
-                                            patient:
-                                                patients.elementAt(index))));
-                          },
-                        ));
+                if (patients.isEmpty) {
+                  return <ListTile>[];
+                }
+                return patients.map((e) => getGeneratedTile(e,controller)).toList();
               }),
             ),
             bottomNavigationBar: navigationBar(context, selected: 'patients'),
@@ -72,4 +58,19 @@ class _PatientSearchScreenState extends State<PatientSearchScreen> {
       },
     );
   }
+
+  ListTile getGeneratedTile(String e,SearchController controller) { return ListTile(
+    title: Text(e),
+    onTap: () {
+      controller.closeView('');
+      Navigator.push(
+          context,
+          MaterialPageRoute(
+              builder: (context) =>
+                  PatientAppointmentsListScreen(
+                      appointmentProvider:
+                      widget.appointmentProvider,
+                      patient: e)));
+    },
+  );}
 }

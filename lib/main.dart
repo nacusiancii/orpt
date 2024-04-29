@@ -17,20 +17,32 @@ class MyApp extends StatelessWidget {
   const MyApp({super.key});
   @override
   Widget build(BuildContext context) {
-    AppointmentProvider appointmentProvider =
-        Provider.of<AppointmentProvider>(context);
-    return MaterialApp(
-      theme: ThemeData(
-        useMaterial3: true,
-      ),
-      routes: {
-        '/': (context) => CalendarScreen(
-              appointmentProvider: appointmentProvider,
-            ),
-        '/patients': (context) => PatientSearchScreen(
-              appointmentProvider: appointmentProvider,
-            ),
-      },
-    );
+    try{
+      AppointmentProvider appointmentProvider =
+      Provider.of<AppointmentProvider>(context);
+      return MaterialApp(
+        theme: ThemeData(
+          useMaterial3: true,
+        ),
+        routes: {
+          '/': (context) => CalendarScreen(
+            appointmentProvider: appointmentProvider,
+          ),
+          '/patients': (context) => PatientSearchScreen(
+            appointmentProvider: appointmentProvider,
+          ),
+        },
+      );
+    }
+    catch(e){
+      return const MaterialApp(
+        title: 'Restart App',
+           home: Scaffold(
+             body: Center(
+               child: Text('Error: Try Restarting. If error persists contact developer'),
+             ),
+           ),
+      );
+    }
   }
 }

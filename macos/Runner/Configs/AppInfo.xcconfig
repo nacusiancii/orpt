@@ -8,7 +8,7 @@
 PRODUCT_NAME = orpt
 
 // The application's bundle identifier
-PRODUCT_BUNDLE_IDENTIFIER = com.dtkt.solutions.orpt
+PRODUCT_BUNDLE_IDENTIFIER = com.drkt.solutions.orpt
 
 // The copyright displayed in application information
-PRODUCT_COPYRIGHT = Copyright © 2023 com.dtkt.solutions. All rights reserved.
+PRODUCT_COPYRIGHT = Copyright © 2023 com.drkt.solutions. All rights reserved.
