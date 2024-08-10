@@ -41,7 +41,7 @@ class PatientAppointmentsListScreen extends StatelessWidget {
                   canceledAppointments
                 ] = snapshot.data!;
 
-                return Column(
+                return ListView(
                   children: [
                     _buildSection(
                         context, 'Active Appointments', activeAppointments),
