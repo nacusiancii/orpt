@@ -46,7 +46,7 @@ class _EditAppointmentScreenState extends State<EditAppointmentScreen> {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return Scaffold(
               appBar: AppBar(
-                title: const Text('New Appointment'),
+                title: const Text('Edit Appointment'),
               ),
               body: const CircularProgressIndicator(),
               bottomNavigationBar: components.navigationBar(context),
@@ -57,7 +57,7 @@ class _EditAppointmentScreenState extends State<EditAppointmentScreen> {
             patients = snapshot.data!;
             return Scaffold(
               appBar: AppBar(
-                title: const Text('New Appointment'),
+                title: const Text('Edit Appointment'),
               ),
               body: Padding(
                 padding: const EdgeInsets.all(16.0),
